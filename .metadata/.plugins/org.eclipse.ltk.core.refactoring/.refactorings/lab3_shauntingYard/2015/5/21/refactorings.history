@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;lab3_shauntingYard/To Students/Student_Code/ExpressionManager&apos; to &apos;ExpressionManager.h&apos;" description="Rename resource &apos;ExpressionManager&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="To Students/Student_Code/ExpressionManager" name="ExpressionManager.h" stamp="1432227583444" updateReferences="true"/>
+</session>

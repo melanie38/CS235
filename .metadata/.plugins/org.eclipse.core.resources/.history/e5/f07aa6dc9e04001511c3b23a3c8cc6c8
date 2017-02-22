@@ -1,0 +1,32 @@
+#pragma once
+#include <iostream>
+#include <string>
+using namespace std;
+
+#include "Station.h"
+
+class TurningTable : public Station
+{
+	public:
+		TurningTable(){headTurnTable = NULL;}
+		~TurningTable(){}
+
+		bool addToStation(int car);
+		int showCurrentCar();
+		bool removeFromStation();
+
+	private:
+		struct Node
+		{
+			int data;
+			Node* next;
+
+			Node(int data, Node* next)
+			{
+				this->data = data;
+				this->next = next;
+			}
+			~Node(){};
+		};
+		Node* headTurnTable;
+};

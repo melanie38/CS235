@@ -1,0 +1,89 @@
+#include <iostream>
+#include <fstream>
+#include <set>
+#include <sstream>
+#include <ctype.h>
+#include <map>
+#include <list>
+
+#include "Misspelled.h"
+
+using namespace std;
+
+// print a set
+void printSet(set<string> dictionary) {
+	for (set<string>::iterator i = dictionary.begin(); i != dictionary.end(); i++) {
+		cout << *i << endl;
+	}
+}
+// print a map
+void printMap(map<string, list<int>> misspelled) {
+	for (auto pair : misspelled) {
+		cout << pair.first << ": " << pair.second << endl;
+	}
+}
+// verify that the words in the document are in the dictionary
+void checkSpell(string line, set<string> dictionary, map<string, list<int>>& misspelled, int lineNum, list<int>& numOfLines) {
+	stringstream ss(line);
+	string word;
+
+	ss >> word;
+	
+	for (set<string>::iterator i = dictionary.begin(); i != dictionary.end(); i++) {
+		if (word != *i) {
+			// Misspelled newWord = Misspelled(word, lineNum);		 
+			misspelled[word] = numOfLines.insert(lineNum);
+	    } 
+	}
+}
+// verify that all the characters in the line are alphabetical
+void check(string line) {
+	stringstream ss(line);
+
+	for (unsigned int i = 0; i < line.length(); i++) {
+		if (!isalpha(line[i])) {
+		    line[i] = ' ';
+		}
+		else if (isupper(line[i])) {
+		    line[i] = tolower(line[i]);
+	        }
+	}
+	checkSpell(line, dictionary, misspelled, lineNum, numOfLin
+}
+// load a dictionary
+void loadFiles(int argc, char* argv[], set<string>& dictionary) {
+	
+	ifstream in;
+	string word, line;
+	int lineNum = 1;
+
+	for (int i = 1; i < argc; i++) {
+		if (i == 1) {
+			in.open(argv[i]);
+			while (in >> word) {
+				dictionary.insert(word);
+			}
+			in.close();
+		}
+		if (i == 2) {
+			in.open(argv[i]);
+			while (getline(in, line)) {
+				check(line);
+				lineNum++;
+			}
+			in.close();
+		}
+	}
+}
+
+int main(int argc, char* argv[]) {
+
+	set<string> dictionary;
+	map<string, list<int>> misspelled;
+	list<int> numOfLines;
+
+	loadFiles(argc, argv, dictionary);
+	printSet(dictionary);
+
+	return(0);
+}

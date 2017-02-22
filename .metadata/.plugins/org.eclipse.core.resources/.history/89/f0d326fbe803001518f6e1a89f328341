@@ -1,0 +1,330 @@
+
+#include "ExpressionManager.h"
+using namespace std;
+ExpressionManager::ExpressionManager() {
+}
+ExpressionManager::~ExpressionManager() {
+}
+bool ExpressionManager::isOpen(string open) {
+if (open == "(" || open == "{" || open == "[") {
+return true;
+} else {
+return false;
+}
+}
+bool ExpressionManager::isClosed(string closed) {
+if (closed == ")" || closed == "}" || closed == "]") {
+return true;
+} else {
+return false;
+}
+}
+bool ExpressionManager::isOperator(string item) {
+if (item == "+" || item == "-" || item == "*" || item == "/"
+|| item == "%" || item == "(" || item ==")" || item == "[" || item == "]" || item
+== "{" || item == "}" ) {
+return true;
+}
+return false;
+}
+int ExpressionManager::getPrecedence(string item) {
+int precedence = 0;
+if (item == "*" || item == "/" || item == "%") {
+precedence = 3;
+} else if (item == "+" || item == "-") {
+precedence = 2;
+} /*else if (item == "(") {
+precedence = 1;
+}*/
+return precedence;
+}
+int ExpressionManager::calculator(int n1, int n2, string sign) {
+if (sign == "+") {
+return n1 + n2;
+} else if(sign == "-") {
+return n2 - n1;
+} else if(sign == "*") {
+return n1 * n2;
+} else if(sign == "/") {
+return n2 / n1;
+} else if (sign == "%") {
+return n2 % n1;
+}
+}
+bool ExpressionManager::symbol(string input) {
+for (int i = 0; i < input.size(); i++) {
+if (input[i] == '$' || input[i] == '@' || input[i] == '.') {
+return false;
+}
+}
+return true;
+}
+bool ExpressionManager::higherPrecedence(string item, string onStack){
+return (getPrecedence(item) > getPrecedence(onStack) ? true : false);
+}
+bool ExpressionManager::hasParentheses(string input) {
+stringstream ss(input);
+string item;
+if (input == "") {
+return false;
+}
+while (ss >> item) {
+if (item == "(" || item == "{" || item == "[") {
+return true;
+}
+if (item == ")" || item == "}" || item == "]") {
+return true;
+}
+}
+return false;
+}
+/*
+ * Checks whether an expression is balanced on its parentheses
+ *
+ * - The given expression will have a space between every number or operator
+ *
+ * @return true if expression is balanced
+ * @return false otherwise
+ */
+bool ExpressionManager::isBalanced(string expression) {
+//cout<<"ISBALANCED!!!!!!!!!!"<<endl;
+stack<string> myStack;
+stringstream s(expression);
+string item;
+if (expression == "") {
+return false;
+}
+while (s >> item) {
+string item2 = item;
+if (isOpen(item2)) {
+myStack.push(item2);
+} else if (isClosed(item2)) {
+if (item2 == ")" && !myStack.empty()) {
+string check = myStack.top();
+if (check != "(") {
+return false;
+} else {
+myStack.pop();
+}
+} else if (item2 == "}" && !myStack.empty()) {
+string check = myStack.top();
+if (check != "{") {
+return false;
+} else {
+myStack.pop();
+}
+} else if (item2 == "]" && !myStack.empty()) {
+string check = myStack.top();
+if (check != "[") {
+return false;
+} else {
+myStack.pop();
+}
+} else {
+return false;
+}
+}
+}
+if (myStack.size() > 0) {
+return false;
+} else {
+return true;
+}
+}
+/**
+ * Converts a postfix expression into an infix expression
+ * and returns the infix expression.
+ *
+ * - The given postfix expression will have a space between every number or operator.
+ * - The returned infix expression must have a space between every number or operator.
+ * - Redundant parentheses are acceptable i.e. ( ( 3 * 4 ) + 5 ).
+ * - Check lab requirements for what will be considered invalid.
+ *ExpressionManager::
+ * return the string "invalid" if postfixExpression is not a valid postfix expression.
+ * otherwise, return the correct infix expression as a st(charring.
+ */
+string ExpressionManager::postfixToInfix(string postfixExpression) {
+if (postfixExpression == "" || postfixExpression == " ") {
+return "invalid";
+}
+if (!isBalanced(postfixExpression)) {
+return "invalid";
+}
+/*if (alphabet(infixExpression)) {
+return "invalid";
+}*/
+if (!symbol(postfixExpression)) {
+return "invalid";
+}
+string item;
+string currentExpresion1;
+string currentExpresion2;
+string newExpresionForStack;
+stringstream s(postfixExpression);
+stack<string> myStack;
+int numberCount = 0;
+int operatorCount = 0;
+if (postfixExpression == "") {
+return "invalid";
+}
+while (s >> item) {
+if (isdigit(item[0])) {
+myStack.push(item);
+numberCount++;
+}
+if (isOperator(item)) {
+operatorCount++;
+if (!myStack.empty()) {
+currentExpresion1 = myStack.top();
+myStack.pop();
+} else {
+return "invalid";
+}
+if (!myStack.empty()) {
+currentExpresion2 = myStack.top();
+myStack.pop();
+} else {
+return "invalid";
+}
+newExpresionForStack = "( " + currentExpresion2 + " " + item + " "
++ currentExpresion1 + " )";
+myStack.push(newExpresionForStack);
+}
+}
+if (!myStack.empty()) {
+string finalExpresion = myStack.top();
+myStack.pop();
+if (!myStack.empty()) {
+return "invalid";
+}
+return finalExpresion;
+string finalAnswer = finalExpresion.substr(0,
+finalExpresion.size() - 1);
+if (postfixEvaluate(finalAnswer) == "invalid") {
+return "invalid";
+} else {
+return finalAnswer;
+}
+} else {
+return "invalid";
+}
+}
+/*
+ * Converts an infix expression into a postfix expression
+ * and returns the postfix expression
+ *
+ * - The given infix expression will have a space between every number or operator.
+ * - The returned postfix expression must have a space between every number or operator.
+ * - Check lab requirements for what will be considered i(charnvalid.
+ *
+ * return the string "invalid" if infixExpression is not a valid infix expression.
+ * otherwise, return the correct postfix expression as a string.
+ */
+string ExpressionManager::infixToPostfix(string infixExpression) {
+if (!isBalanced(infixExpression)) {
+return "invalid";
+}
+if (!symbol(infixExpression)) {
+return "invalid";
+}
+string result;
+stack<string> myStack;
+stringstream s(infixExpression);
+string item;
+int opCount = 0;
+int numCount = 0;
+while(s >> item){
+if(!isOperator(item)){
+result += item + " ";
+numCount++;
+}
+if(isOperator(item)){
+opCount++;
+if(isOpen(item)){
+myStack.push(item);
+}
+else if(isClosed(item)){
+while(!myStack.empty() && !isOpen(myStack.top())){
+result += myStack.top() + " ";
+myStack.pop();
+}
+myStack.pop();
+} else if(myStack.empty() || isOpen(myStack.top())){
+myStack.push(item);
+} else if(!myStack.empty() && higherPrecedence(item, myStack.top())){
+myStack.push(item);
+} else if (!myStack.empty() && !higherPrecedence(item, myStack.top())) {
+result += myStack.top() + " ";
+myStack.pop();
+myStack.push(item);
+}
+}
+}
+while (!myStack.empty()) {
+//cout<<"WHILE"<<endl;
+result += myStack.top() + " ";
+myStack.pop();
+}
+string finalAnswer = result.substr(0, result.size() - 1);
+//cout<<"FINAL ANSWER: "<<finalAnswer<<endl;
+if (postfixEvaluate(finalAnswer) == "invalid") {
+return "invalid";
+} else {
+return finalAnswer;
+}
+}
+/*
+ * Evaluates a postfix expression returns the result as a string
+ *
+ * - The given postfix expression will have a space between every number or operator.
+ * - Check lab requirements for what will be considered invalid.
+ *
+ * return the string "invalid" if postfixExpression is not a valid postfix Expression
+ * otherwise, return the correct evaluation as a string
+ */
+string ExpressionManager::postfixEvaluate(string postfixExpression) {
+if (!isBalanced(postfixExpression)) {
+return "invalid";
+}
+string item;
+int num1;
+int num2;
+int stackCount;
+stringstream s(postfixExpression);
+stack<int> myStack;
+while (s >> item) {
+if (isdigit(item[0])) {
+int numItem = atoi(item.c_str());
+myStack.push(numItem);
+}
+if (isOperator(item)) {
+if (!myStack.empty()) {
+num1 = myStack.top();
+myStack.pop();
+} else {
+return "invalid";
+}
+if (!myStack.empty()) {
+num2 = myStack.top();
+myStack.pop();
+} else {
+return "invalid";
+}
+if (item == "/" && num1 == 0) {
+return "invalid";
+}
+if (item == "%" && num1 == 0) {
+return "invalid";
+}
+stackCount = calculator(num1, num2, item);
+myStack.push(stackCount);
+}
+}
+if (!myStack.empty()) {
+int a = myStack.top();
+stringstream s;
+s << a;
+string str = s.str();
+return str;
+}
+}

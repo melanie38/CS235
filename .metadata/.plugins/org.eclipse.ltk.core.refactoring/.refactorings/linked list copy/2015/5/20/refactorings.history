@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;linked list copy/LinkedList.h&apos; to &apos;LinkedListCopy.h&apos;" description="Rename resource &apos;LinkedList.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="LinkedList.h" name="LinkedListCopy.h" stamp="1431816902358" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;linked list copy/LinkedListCopy.h&apos; to &apos;LinkedList.h&apos;" description="Rename resource &apos;LinkedListCopy.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="LinkedListCopy.h" name="LinkedList.h" stamp="1431816916201" updateReferences="true"/>
+</session>

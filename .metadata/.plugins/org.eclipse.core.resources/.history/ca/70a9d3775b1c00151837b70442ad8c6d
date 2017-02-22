@@ -1,0 +1,74 @@
+/*
+ * main.cpp
+ *
+ *  Created on: Jun 26, 2015
+ *      Author: mlalahar
+ */
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <fstream>
+
+#include "Student.h"
+#include "Grade.h"
+
+using namespace std;
+
+// print Student list
+void print(vector<Student> list) {
+	for (unsigned int i = 0; i < list.size(); i++) {
+		cout << list[i].toString() << endl;
+	}
+}
+// print Grade list
+void print(vector<Grade> list) {
+	for (unsigned int i = 0; i < list.size(); i++) {
+		cout << list[i].toString() << endl;
+	}
+}
+// load a file
+void loadFile(int argc, char*argv[], vector<Student>& listOfStudent) {
+
+	ifstream in;
+	string data, ID, name, address, phone;
+
+	for (int i = 1; i < argc; i++) {
+		in.open(argv[i]);
+
+		if (i = 1) {
+			while (getline(in, ID)) {
+				getline(in, name);
+				getline(in, address);
+				getline(in, phone);
+
+				Student newStudent =  Student(ID, name, address, phone);
+				listOfStudent.push_back(newStudent);
+			}
+		}
+		if else (i = 2) {
+			while (getline(in, course)) {
+				getline(in, ID);
+				getline(in, grade);
+
+				Grade newGrade =  Grade(course, ID, grade);
+				listOfGrade.push_back(newGrade);
+			}
+		}
+
+	}
+}
+
+int main(int argc, char* argv[]) {
+
+	vector<Student> listOfStudent;
+	vector<Grade> listOfGrade;
+
+	loadFile(argc, argv, listOfStudent);
+	sort(listOfStudent.begin(), listOfStudent.end());
+	print(listOfStudent);
+	print(listOfGrade);
+
+	return (0);
+}
+

@@ -1,0 +1,233 @@
+//
+//  ExpressionManager.cpp
+//  lab3_shuntingYard
+//
+//  Created by Mélanie on 21/05/2015.
+//  Copyright (c) 2015 Mélanie. All rights reserved.
+//
+
+#include "ExpressionManager.h"
+
+
+bool isOpen(string character)
+{
+    if (character == "{" || character == "[" || character == "(")
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+bool isClose(string character)
+{
+    if (character == "}" || character == "]" || character == ")")
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+bool isOperator(string character)
+{
+    if (character == "+" || character == "-" || character == "*" || character == "/" || character == "%")
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+bool isDecimal(string character)
+{
+    stringstream ss(character);
+    char integer;
+    
+    while (ss >> integer)
+    {
+        if (integer == '.')
+        {
+            return true;
+        }
+    }
+    return false;
+}
+/* Check if all the symbols in the expression are valid.
+ */
+bool isValidSymbol(string character)
+{
+    stringstream iss(character);
+    int integer;
+    
+    if (isOpen(character) || isClose(character) || isOperator(character) || !(iss >> integer).fail())
+    {
+        return true;
+    }
+    else
+    {
+        iss.clear();
+        return false;
+    }
+}
+/* Check if the given expression is valid.
+ */
+bool check(string expression)
+{
+    if (expression == " ")
+    {
+        return false;
+    }
+    else
+    {
+        stringstream ss(expression);
+        string character;
+        
+        while (ss >> character)
+        {
+            if (isDecimal(character))
+            {
+                cout << "There is a decimal number in the expression." << endl;
+                return false;
+            }
+            else if (!isValidSymbol(character))
+            {
+                cout << "There is an invalid symbol in the expression." << endl;
+                return false;
+            }
+        }
+        return true;
+    }
+}
+void emptyStack(stack<string> myStack)
+{
+    while (!myStack.empty())
+    {
+        myStack.pop();
+    }
+}
+string toCompare(string data)
+{
+    if (data == "}")
+    {
+        data = "{";
+    }
+    else if (data == "]")
+    {
+        data = "[";
+    }
+    else if (data == ")")
+    {
+        data = "(";
+    }
+    return data;
+}
+/*
+ * Checks whether an expression is balanced on its parentheses
+ *
+ * - The given expression will have a space between every number or operator
+ *
+ * @return true if expression is balanced
+ * @return false otherwise
+ */
+bool isBalanced(string expression)
+{
+    stack<string> bracesStack;
+    stringstream ss(expression);
+    string data;
+    
+    if (!check(expression))
+    {
+        cout << "The expression is not valid." << endl;
+        return false;
+    }
+    while (ss >> data)
+    {
+        if (isOpen(data))
+        {
+            bracesStack.push(data);
+        }
+        else if (isClose(data))
+        {
+            if (!bracesStack.empty())
+            {
+                data = toCompare(data);
+                    
+                if (data != bracesStack.top())
+                {
+                    cout << "The expression is not balanced." << endl;
+                    emptyStack(bracesStack);
+                    return false;
+                }
+                else
+                {
+                    bracesStack.pop();
+                }
+            }
+            else
+            {
+                cout << "The expression has a closing parenthesis/brace/bracket without an open one." << endl;
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+/**
+ * Converts a postfix expression into an infix expression
+ * and returns the infix expression.
+ *
+ * - The given postfix expression will have a space between every number or operator.
+ * - The returned infix expression must have a space between every number or operator.
+ * - Redundant parentheses are acceptable i.e. ( ( 3 * 4 ) + 5 ).
+ * - Check lab requirements for what will be considered invalid.
+ *
+ * return the string "invalid" if postfixExpression is not a valid postfix expression.
+ * otherwise, return the correct infix expression as a string.
+ */
+string postfixToInfix(string postfixExpression)
+{
+    string string;
+    return string;
+}
+
+/*
+ * Converts an infix expression into a postfix expression
+ * and returns the postfix expression
+ *
+ * - The given infix expression will have a space between every number or operator.
+ * - The returned postfix expression must have a space between every number or operator.
+ * - Check lab requirements for what will be considered invalid.
+ *
+ * return the string "invalid" if infixExpression is not a valid infix expression.
+ * otherwise, return the correct postfix expression as a string.
+ */
+string infixToPostfix(string infixExpression)
+{
+    string string;
+    return string;
+}
+
+/*
+ * Evaluates a postfix expression returns the result as a string
+ *
+ * - The given postfix expression will have a space between every number or operator.
+ * - Check lab requirements for what will be considered invalid.
+ *
+ * return the string "invalid" if postfixExpression is not a valid postfix Expression
+ * otherwise, return the correct evaluation as a string
+ */
+string postfixEvaluate(string postfixExpression)
+{
+    if(!isBalanced(postfixExpression))
+    {
+        return "invalid";
+    }
+        
+    string string;
+    return string;
+}

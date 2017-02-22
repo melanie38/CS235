@@ -1,0 +1,23 @@
+// EXRESSIONMANAGER.h
+#include "ExpressionManagerInterface.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sstream>
+class ExpressionManager: public ExpressionManagerInterface {
+public:
+ExpressionManager();
+~ExpressionManager();
+bool isBalanced(string expression);
+string postfixToInfix(string postfixExpression);
+string infixToPostfix(string infixExpression);
+string postfixEvaluate(string postfixExpression);
+private:
+bool isOpen(string open);
+bool isClosed(string closed);
+bool isOperator(string item);
+int getPrecedence(string item);
+int calculator(int n1, int n2, string sign);
+bool symbol(string input);
+bool higherPrecedence(string item, string onStack);
+bool hasParentheses(string input);
+};

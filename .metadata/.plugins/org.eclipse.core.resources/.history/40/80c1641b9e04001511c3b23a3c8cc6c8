@@ -1,0 +1,40 @@
+#pragma once
+#include <iostream>
+#include <string>
+using namespace std;
+
+class TurningTable : public Station
+{
+	public:
+		TurningTable(){}
+		~TurningTable(){}
+
+		//Part 1--------------------------------------------------------------
+		/**
+		 * Let another car arrive at the station and become the current car.
+		 * Do not allow a new car to arrive if any of the following conditions apply:
+		 * 1.	There is already a current car
+		 * 2.	The new car's ID already exists in any structure
+		 * 3.	The new car's ID is negative
+		 *
+		 * @param car the ID of the car arriving at the station
+		 * @return true if the car successfully arrived; false otherwise
+		 */
+		bool addToStation(int car);
+
+		/**
+		 * Returns the ID of the current car.
+		 * Return -1 if there is no current car.
+		 *
+		 * @return the ID of the current car; -1 if there is no current car
+		 */
+		int showCurrentCar();
+
+		/**
+		 * Removes the current car from the station.
+		 * Does nothing if there is no current car.
+		 *
+		 * @return true if the current car successfully left; false otherwise
+		 */
+		bool removeFromStation();
+};

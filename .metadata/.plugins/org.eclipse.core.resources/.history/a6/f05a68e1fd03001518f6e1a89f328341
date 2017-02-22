@@ -1,0 +1,506 @@
+
+//
+//  ExpressionManager.cpp
+//  lab3_shuntingYard
+//
+//  Created by Mélanie on 21/05/2015.
+//  Copyright (c) 2015 Mélanie. All rights reserved.
+//
+
+#include "ExpressionManager.h"
+
+ExpressionManager::ExpressionManager(){};
+ExpressionManager::~ExpressionManager(){};
+
+bool ExpressionManager::isOpen( string character)
+{
+    if (character == "{" || character == "[" || character == "(")
+    {
+        return true;
+    }
+    else
+    {
+        return false ;
+    }
+}
+bool ExpressionManager::isClose( string character)
+{
+    if (character == "}" || character == "]" || character == ")")
+    {
+        return true;
+    }
+    else
+    {
+        return false ;
+    }
+}
+bool ExpressionManager::isOperator( string character)
+{
+    if (character == "+" || character == "-" || character == "*" || character == "/" || character == "%")
+    {
+        return true;
+    }
+    else
+    {
+        return false ;
+    }
+}
+bool ExpressionManager::isDecimal( string character)
+{
+    stringstream ss(character);
+    char decimal;
+
+    while (ss >> decimal)
+    {
+        if (decimal == '.')
+        {
+            return true;
+        }
+    }
+    return false ;
+}
+bool ExpressionManager::isInteger( string character)
+{
+    stringstream ss(character);
+    int integer;
+
+    if ((ss >> integer). fail())
+    {
+        ss. clear();
+        return false ;
+    }
+    else
+    {
+        ss. clear();
+        return true;
+    }
+}
+int ExpressionManager::insideParenthesis( int first, int sec, string operators)
+{
+    int result = 0;
+
+    if (operators == "+")
+    {
+        result = first + sec;
+    }
+    else if (operators == "-")
+    {
+        result = first - sec;
+    }
+    else if (operators == "*")
+    {
+        result = first * sec;
+    }
+    else if (operators == "/")
+    {
+        result = first / sec;
+    }
+    else if (operators == "%")
+    {
+        result = first % sec;
+    }
+
+    return result;
+}
+/* Check if all the symbols in the expression are valid.
+ */
+bool ExpressionManager::isValidSymbol(string character)
+{
+    if ( isOpen(character) || isClose(character) || isOperator(character) || isInteger(character))
+    {
+        return true;
+    }
+    else
+    {
+        return false ;
+    }
+}
+/* Check if the given expression is valid.
+ */
+bool ExpressionManager::check( string expression)
+{
+    if (expression == " ")
+    {
+        cout << "The expression is empty." << endl ;
+        return false ;
+    }
+    else
+    {
+        stringstream ss(expression);
+        string character;
+
+        while (ss >> character)
+        {
+            if ( isDecimal(character))
+            {
+                cout << "There is a decimal number in the expression." << endl ;
+                return false;
+            }
+            else if (! isValidSymbol(character))
+            {
+                cout << "There is an invalid symbol in the expression." << endl ;
+                return false;
+            }
+        }
+        return true;
+    }
+}
+void ExpressionManager::emptyStack( stack< string> myStack)
+{
+    while (!myStack. empty())
+    {
+        myStack. pop();
+    }
+}
+/* Reverse the parenthesis, bracket, braces in order to compare it with what is in the stack.
+ */
+string ExpressionManager::toCompare(string data)
+{
+    if (data == "}")
+    {
+        data = "{";
+    }
+    else if (data == "]")
+    {
+        data = "[";
+    }
+    else if (data == ")")
+    {
+        data = "(";
+    }
+    return data;
+}
+/*
+ * Checks whether an expression is balanced on its parentheses
+ *
+ * - The given expression will have a space between every number or operator
+ *
+ * @return true if expression is balanced
+ * @return false otherwise
+ */
+bool ExpressionManager::isBalanced( string expression)
+{
+    stack< string> bracesStack;
+    stringstream ss(expression);
+    string data;
+
+    if (! check(expression))
+    {
+        cout << "The expression is not valid." << endl ;
+        return false ;
+    }
+    else
+    {
+        while (ss >> data)
+        {
+            if ( isOpen(data))
+            {
+                bracesStack. push(data);
+            }
+            else if ( isClose(data))
+            {
+                if (!bracesStack. empty())
+                {
+                    data = toCompare(data);
+
+                    if (data != bracesStack. top())
+                    {
+                        cout << "The expression is not balanced." << endl;
+                        emptyStack(bracesStack);
+                        return false;
+                    }
+                    else
+                    {
+                        bracesStack. pop();
+                    }
+                }
+                else
+                {
+                    cout << "The expression has a closing parenthesis/brace/bracket without an open one." << endl ;
+                    return false;
+                }
+            }
+        }
+        if (bracesStack. empty())
+        {
+            return true;
+        }
+        else
+        {
+            cout << "The expression dosen't have the same number of open and closed parenthesis." << endl ;
+            return false;
+        }
+    }
+}
+
+/**
+ * Converts a postfix expression into an infix expression
+ * and returns the infix expression.
+ *
+ * - The given postfix expression will have a space between every number or operator.
+ * - The returned infix expression must have a space between every number or operator.
+ * - Redundant parentheses are acceptable i.e. ( ( 3 * 4 ) + 5 ).
+ * - Check lab requirements for what will be considered invalid.
+ *
+ * return the string "invalid" if postfixExpression is not a valid postfix expression.
+ * otherwise, return the correct infix expression as a string.
+ */
+string ExpressionManager::postfixToInfix( string postfixExpression)
+{
+	if (!isBalanced(postfixExpression))
+	{
+		return "invalid";
+	}
+
+	stringstream ss(postfixExpression);
+	string data;
+
+	string newExpression;
+	string result;
+	string firstMember;
+	string secMember;
+
+	int countInt = 0;
+
+	stack<string> myStack;
+
+	while (ss >> data)
+	{
+		if (isInteger(data))
+		{
+			myStack.push(data);
+			countInt++;
+		}
+		else if(isOperator(data))
+		{
+			if(!myStack.empty())
+			{
+				secMember = myStack.top();
+				myStack.pop();
+				countInt--;
+			}
+			else
+			{
+				return "invalid";
+			}
+			if (!myStack.empty())
+			{
+				firstMember = myStack.top();
+				myStack.pop();
+				countInt--;
+			}
+			else
+			{
+				return "invalid";
+			}
+			newExpression = "( " + firstMember + " " + data + " " + secMember + " )";
+			myStack.push(newExpression);
+		}
+	}
+	if (!myStack.empty())
+	{
+		string finalExpresion = myStack.top();
+		myStack.pop();
+
+		if (!myStack.empty())
+		{
+			return "invalid";
+		}
+		else
+		{
+			return finalExpresion;
+		}
+
+		//string finalAnswer = finalExpresion.substr(0, finalExpresion.size() - 1);
+
+		if (postfixEvaluate(finalAnswer) == "invalid")
+		{
+			return "invalid";
+		}
+		else
+		{
+			return finalAnswer;
+		}
+	}
+	else
+	{
+		return "invalid";
+	}
+}
+
+
+
+/*
+ * Converts an infix expression into a postfix expression
+ * and returns the postfix expression
+ *
+ * - The given infix expression will have a space between every number or operator.
+ * - The returned postfix expression must have a space between every number or operator.
+ * - Check lab requirements for what will be considered invalid.
+ *
+ * return the string "invalid" if infixExpression is not a valid infix expression.
+ * otherwise, return the correct postfix expression as a string.
+ */
+string ExpressionManager::infixToPostfix( string infixExpression)
+{
+	if (!isBalanced(infixExpression))
+	{
+		return "invalid";
+	}
+
+	stringstream ss(infixExpression);
+	string data;
+
+	string newExpression;
+	string result;
+	string firstMember;
+	string secMember;
+
+	int countInt = 0;
+	int countNewEx = 0;
+
+	stack<string> myStack;
+
+	while (ss >> data)
+	{
+		if (isInteger(data))
+		{
+			myStack.push(data);
+			countInt++;
+		}
+		else if(isOperator(data))
+		{
+			if(countInt >= 2)
+			{
+				firstMember = myStack.top();
+				myStack.pop();
+				countInt--;
+			}
+			else
+			{
+				return "invalid";
+			}
+			if (countInt >= 2)
+			{
+				secMember = myStack.top();
+				myStack.pop();
+				countInt--;
+			}
+			else
+			{
+				return "invalid";
+			}
+			newExpression = "( " + firstMember + " " + data + " " + secMember + " )";
+			countNewEx++;
+			myStack.push(newExpression);
+
+			if (countNewEx == 2)
+			{
+				firstMember = myStack.top();
+				myStack.pop();
+				secMember = myStack.top();
+				myStack.pop();
+
+				newExpression = "( " + firstMember + " " + data + " " + secMember + " )";
+				myStack.push(newExpression);
+			}
+		}
+	}
+	if (!myStack.empty())
+	{
+		result = myStack.top();
+		myStack.pop();
+		return result;
+	}
+	else
+	{
+		return "invalid";
+	}
+}
+
+/*
+ * Evaluates a postfix expression returns the result as a string
+ *
+ * - The given postfix expression will have a space between every number or operator.
+ * - Check lab requirements for what will be considered invalid.
+ *
+ * return the string "invalid" if postfixExpression is not a valid postfix Expression
+ * otherwise, return the correct evaluation as a string
+ */
+string ExpressionManager::postfixEvaluate( string postfixExpression)
+{
+    if(! isBalanced(postfixExpression))
+    {
+        return "invalid";
+    }
+
+    stringstream ss(postfixExpression);
+    string data;
+    stack< int> myInts;
+    stack< string> myOperator;
+    stack< string> myBrace;
+
+    stringstream iss(data); // to convert strings in integers
+
+    string operators;
+    int first = 0;
+    int sec = 0;
+    int number;
+
+    while (ss >> data)
+    {
+        if (! isClose(data))
+        {
+            if ((myInts. size() == 2) && (myOperator. size() == 1))
+            {
+                operators = myOperator. top();
+
+                if ((operators == "/" || operators == "%" ) && sec == 0)
+                {
+                    cout << "Cannot evaluate: divided by 0." << endl ;
+                    return "invalid";
+                }
+                else
+                {
+                    myInts. push( insideParenthesis(first, sec, operators));
+                    myOperator. pop();
+                    myBrace. pop();
+                }
+            }
+            if ( isOpen(data))
+            {
+                myBrace. push(data);
+            }
+            else if ( isInteger(data))
+            {
+                iss >> number;
+
+                if (myOperator. empty())
+                {
+                    first = number;
+                }
+                else
+                {
+                    sec = number;
+                }
+            }
+            else if ( isOperator(data))
+            {
+                if (!myInts. empty() && myOperator. empty())
+                {
+                    myOperator. push(data);
+                }
+                else
+                {
+                    cout << "An operator must be preceded by a operand." << endl ;
+                    return "invalid";
+                }
+            }
+        }
+    }
+	int evaluation = myInts.top();
+	stringstream s;
+	s << evaluation;
+	string str = s.str();
+	return str;
+}

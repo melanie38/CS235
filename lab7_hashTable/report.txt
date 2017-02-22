@@ -1,0 +1,12 @@
+clear
+add bob
+print
+hash 0: bob
+remove bob
+print
+add joe
+clear
+print
+remove bob
+remove joe
+print

@@ -1,0 +1,49 @@
+#pragma once
+#include <iostream>
+#include <string>
+#include "StationInterface.h"
+using namespace std;
+
+class Station : public StationInterface
+{
+	public:
+		Station(){}
+		~Station(){}
+
+		bool addToStation(int car);
+		int showCurrentCar();
+		bool removeFromStation();
+		bool addToStack();
+		bool removeFromStack();
+		int showTopOfStack();
+		int showSizeOfStack();
+		bool addToQueue();
+		bool removeFromQueue();
+		int showTopOfQueue();
+		int showSizeOfQueue();
+		bool addToDequeLeft();
+		bool addToDequeRight();
+		bool removeFromDequeLeft();
+		bool removeFromDequeRight();
+		int showTopOfDequeLeft();
+		int showTopOfDequeRight();
+		int showSizeOfDeque();
+
+		bool find(int car);
+
+	private:
+		struct Node
+			{
+				int car;
+				Node* next;
+
+				Node(int car, Node* next)
+				{
+					this->car = car;
+					this->next = next;
+
+				}
+				~Node(){};
+			};
+		Node* head;
+};

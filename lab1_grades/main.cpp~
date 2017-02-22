@@ -1,0 +1,159 @@
+/*
+ * main.cpp
+ *
+ *  Created on: Jun 26, 2015
+ *      Author: mlalahar
+ */
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <fstream>
+#include <map>
+
+#include "Student.h"
+#include "Grade.h"
+#include "GPA.h"
+
+using namespace std;
+
+// print Student list
+void print(char* argv[], vector<Student> listOfStudent, vector<Grade> listOfGrade, vector<GPA> listOfGPA) {
+	
+	ofstream out;
+	out.open(argv[4]);
+
+	for (unsigned int i = 0; i < listOfStudent.size(); i++) {
+		cout << listOfStudent[i].toString();
+		out << listOfStudent[i].toString();
+	}
+	cout << endl;
+	out << endl;
+	for (unsigned int j = 0; j < listOfGrade.size(); j++) {
+		cout << listOfGrade[j].toString();
+		out << listOfGrade[j].toString();
+	}
+	cout << endl;
+	out << endl;
+	for (unsigned int k = 0; k < listOfGPA.size(); k++) {
+		cout << listOfGPA[k].toString();
+		out << listOfGPA[k].toString();
+	}
+}
+// load a file
+void loadFile(int argc, char*argv[], vector<Student>& listOfStudent, vector<Grade>& listOfGrade, vector<string>& queryList) {
+
+	ifstream in;
+	string data, ID, name, address, phone, grade, course;
+
+	for (int i = 1; i < argc; i++) {
+
+		if (i == 1) {
+			in.open(argv[i]);
+
+			while (getline(in, ID)) {
+				getline(in, name);
+				getline(in, address);
+				getline(in, phone);
+
+				Student newStudent =  Student(ID, name, address, phone);
+				listOfStudent.push_back(newStudent);
+			}
+			in.close();
+		}
+		else if (i == 2) {
+			in.open(argv[i]);
+
+			while (getline(in, course)) {
+				getline(in, ID);
+				getline(in, grade);
+	
+				Grade newGrade =  Grade(course, ID, grade);
+				listOfGrade.push_back(newGrade);
+			}
+			in.close();
+		}
+		else if (i == 3) {
+			in.open(argv[i]);
+			while (getline(in, ID)) {
+				queryList.push_back(ID);
+			}
+			in.close();
+		}
+	}
+}
+// find
+bool find(vector<GPA> listOfGPA, string name) {
+	for (unsigned int i = 0; i < listOfGPA.size(); i++) {
+		if (listOfGPA[i].getName() == name) {
+			return true;
+		}
+	}
+	return false;
+}
+// caluculate GPA
+void calculateGPA(vector<Grade> listOfGrade, vector<string> queryList, map<string, double> gradeConversion, vector<Student> listOfStudent, vector<GPA>& listOfGPA) {
+	
+	string name, ID;
+
+	for (unsigned int i = 0; i < queryList.size(); i++) {
+		double sumGrade = 0;
+		double currentGPA = 0;
+		int course = 0;
+
+		for (unsigned int j = 0; j < listOfStudent.size(); j++) {
+			if (listOfStudent[j].getID() == queryList[i].c_str()) {
+				name = listOfStudent[j].getName();
+				ID = queryList[i].c_str();
+				for (unsigned int k = 0; k < listOfGrade.size(); k++) {
+					if (listOfGrade[k].getID() == listOfStudent[j].getID()) {
+						sumGrade += gradeConversion[listOfGrade[k].getGrade()];
+						course++;
+					}
+				}
+				if (course == 0) {
+					currentGPA = 0.00;
+				}
+				else {
+					currentGPA = sumGrade / course;
+				}		
+				if (!find(listOfGPA, name)) {
+					GPA newGPA = GPA(ID,currentGPA, name);
+					listOfGPA.push_back(newGPA);
+				}
+			}
+		}
+	}
+}
+
+int main(int argc, char* argv[]) {
+
+	vector<Student> listOfStudent;
+	vector<Grade> listOfGrade;
+	vector<string> queryList;
+	vector<GPA> listOfGPA;
+
+	map<string, double> gradeConversion;
+
+	gradeConversion["A"]  = 4.0;
+	gradeConversion["A-"] = 3.7;
+	gradeConversion["B+"] = 3.4;
+	gradeConversion["B"]  = 3.0;
+	gradeConversion["B-"] = 2.7;
+	gradeConversion["C+"] = 2.4;
+	gradeConversion["C"]  = 2.0;
+	gradeConversion["C-"] = 1.7;
+	gradeConversion["D+"] = 1.4;
+	gradeConversion["D"]  = 1.0;
+	gradeConversion["D-"] = 0.7;
+	gradeConversion["E"]  = 0.0;
+
+	loadFile(argc, argv, listOfStudent, listOfGrade, queryList);
+	sort(listOfStudent.begin(), listOfStudent.end());
+	sort(listOfGrade.begin(), listOfGrade.end());
+	calculateGPA(listOfGrade, queryList, gradeConversion, listOfStudent, listOfGPA); 
+	print(argv, listOfStudent, listOfGrade, listOfGPA);
+
+	return (0);
+}
+
